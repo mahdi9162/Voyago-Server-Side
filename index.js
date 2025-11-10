@@ -26,25 +26,28 @@ async function run() {
 
     // Voyago Vehicles Collection
     const db = client.db('voyago-db');
-    const voyagoCollection = db.collection('vehicles');
+    const vehiclesCollection = db.collection('vehicles');
+    // Voyago Booking Collectin
+    const bookingsCollection = db.collection('bookings');
 
+    // API For Vehicles Collection
     // GET API
     app.get('/vehicles', async (req, res) => {
-      const result = await voyagoCollection.find().toArray();
+      const result = await vehiclesCollection.find().toArray();
       res.send(result);
     });
 
     app.get('/vehicles/:id', async (req, res) => {
       const { id } = req.params;
       const objectId = new ObjectId(id);
-      const result = await voyagoCollection.findOne({ _id: objectId });
+      const result = await vehiclesCollection.findOne({ _id: objectId });
       res.send(result);
     });
 
     // POST API
     app.post('/vehicles', async (req, res) => {
       const data = req.body;
-      const result = await voyagoCollection.insertOne(data);
+      const result = await vehiclesCollection.insertOne(data);
       res.send(result);
     });
 
@@ -57,7 +60,7 @@ async function run() {
       const update = {
         $set: data,
       };
-      const result = await voyagoCollection.updateOne(query, update);
+      const result = await vehiclesCollection.updateOne(query, update);
       res.send(result);
     });
 
@@ -65,7 +68,21 @@ async function run() {
     app.delete('/vehicles/:id', async (req, res) => {
       const { id } = req.params;
       const objectId = new ObjectId(id);
-      const result = await voyagoCollection.deleteOne({ _id: objectId });
+      const result = await vehiclesCollection.deleteOne({ _id: objectId });
+      res.send(result);
+    });
+
+    //API For Bookings Collection
+    // GET API
+    app.get('/bookings', async (req, res) => {
+      const result = await bookingsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/bookings/:id', async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+      const result = await bookingsCollection.findOne({ _id: objectId });
       res.send(result);
     });
 
