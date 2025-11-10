@@ -61,6 +61,14 @@ async function run() {
       res.send(result);
     });
 
+    // DELETE API
+    app.delete('/vehicles/:id', async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+      const result = await voyagoCollection.deleteOne({ _id: objectId });
+      res.send(result);
+    });
+
     await client.db('admin').command({ ping: 1 });
     console.log('Pinrd your deployment. You successfully connected to MongoDB!');
   } finally {
