@@ -41,6 +41,13 @@ async function run() {
       res.send(result);
     });
 
+    // POST API
+    app.post('/vehicles', async (req, res) => {
+      const data = req.body;
+      const result = await voyagoCollection.insertOne(data);
+      res.send(result);
+    });
+
     await client.db('admin').command({ ping: 1 });
     console.log('Pinrd your deployment. You successfully connected to MongoDB!');
   } finally {
