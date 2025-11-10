@@ -24,6 +24,16 @@ async function run() {
   try {
     await client.connect();
 
+    // Voyago Vehicles Collection
+    const db = client.db('voyago-db');
+    const voyagoCollection = db.collection('vehicles');
+
+    // GET API
+    app.get('/vehicles', async (req, res) => {
+      const result = await voyagoCollection.find().toArray();
+      res.send(result);
+    });
+
     await client.db('admin').command({ ping: 1 });
     console.log('Pinrd your deployment. You successfully connected to MongoDB!');
   } finally {
