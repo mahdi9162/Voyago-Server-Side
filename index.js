@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+require('dotenv').config();
 const app = express();
 const port = 3000;
 app.use(cors());
@@ -10,7 +11,7 @@ app.get('/', (req, res) => {
   res.send('Server is Running Fine');
 });
 
-const uri = 'mongodb+srv://voyago-db:IkoSmhK1PWsMFmZi@quantumvault.xg6nrc4.mongodb.net/?appName=QuantumVault';
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@quantumvault.xg6nrc4.mongodb.net/?appName=QuantumVault`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -75,7 +76,9 @@ async function run() {
     //API For Bookings Collection
     // GET API
     app.get('/bookings', async (req, res) => {
-      const result = await bookingsCollection.find().toArray();
+      const email = req.query.email;
+      const filter = { userEmail: email };
+      const result = await bookingsCollection.find(filter).toArray();
       res.send(result);
     });
 
@@ -115,7 +118,7 @@ async function run() {
     });
 
     await client.db('admin').command({ ping: 1 });
-    console.log('Pinrd your deployment. You successfully connected to MongoDB!');
+    console.log('Ping your deployment. You successfully connected to MongoDB!');
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
