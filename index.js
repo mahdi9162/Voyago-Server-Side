@@ -45,6 +45,11 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/latest-vehicles', async (req, res) => {
+      const result = await vehiclesCollection.find().sort({ createdAt: -1 }).limit(6).toArray();
+      res.send(result);
+    });
+
     // POST API
     app.post('/vehicles', async (req, res) => {
       const data = req.body;
