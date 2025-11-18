@@ -3,7 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     // Voyago Vehicles Collection
     const db = client.db('voyago-db');
@@ -42,6 +42,13 @@ async function run() {
       const { id } = req.params;
       const objectId = new ObjectId(id);
       const result = await vehiclesCollection.findOne({ _id: objectId });
+      res.send(result);
+    });
+
+    app.get('/my-vehicles', async (req, res) => {
+      const email = req.query.email;
+      const filter = { userEmail: email };
+      const result = await vehiclesCollection.find(filter).toArray();
       res.send(result);
     });
 
@@ -83,7 +90,7 @@ async function run() {
     app.get('/bookings', async (req, res) => {
       const email = req.query.email;
       const filter = { userEmail: email };
-      const result = await bookingsCollection.find(filter).toArray();
+      const result = await bookingsCollection.find(filter).sort({ tripStartDate: 1 }).toArray();
       res.send(result);
     });
 
@@ -122,7 +129,7 @@ async function run() {
       res.send(result);
     });
 
-    await client.db('admin').command({ ping: 1 });
+    // await client.db('admin').command({ ping: 1 });
     console.log('Ping your deployment. You successfully connected to MongoDB!');
   } finally {
     // Ensures that the client will close when you finish/error
@@ -131,6 +138,9 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+  });
+}
+module.exports = app;
