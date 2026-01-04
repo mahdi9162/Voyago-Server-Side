@@ -115,6 +115,13 @@ async function run() {
       res.send(result);
     });
 
+    // get single user by email
+    app.get('/users/:email', async (req, res) => {
+      const email = req.params.email;
+      const user = await usersCollection.findOne({ email });
+      res.send(user);
+    });
+
     // POST API
     app.post('/vehicles', async (req, res) => {
       const data = req.body;
@@ -132,6 +139,21 @@ async function run() {
         $set: data,
       };
       const result = await vehiclesCollection.updateOne(query, update);
+      res.send(result);
+    });
+
+    // update profile
+    app.patch('/users/:id', async (req, res) => {
+      const { id } = req.params;
+      const { name, photoURL } = req.body;
+
+      const result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: { name, photoURL },
+        }
+      );
+
       res.send(result);
     });
 
