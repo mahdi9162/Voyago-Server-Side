@@ -111,7 +111,7 @@ async function run() {
     });
 
     app.get('/latest-vehicles', async (req, res) => {
-      const result = await vehiclesCollection.find().sort({ createdAt: -1 }).limit(6).toArray();
+      const result = await vehiclesCollection.find().sort({ createdAt: -1 }).limit(8).toArray();
       res.send(result);
     });
 
