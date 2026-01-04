@@ -30,6 +30,29 @@ async function run() {
     const vehiclesCollection = db.collection('vehicles');
     // Voyago Booking Collectin
     const bookingsCollection = db.collection('bookings');
+    // user collection
+    const usersCollection = db.collection('users');
+
+    // Api for users collection
+    // post api
+    app.post('/signup', async (req, res) => {
+      try {
+        const existing = await usersCollection.findOne({ email: req.body.email });
+
+        if (existing) {
+          return res.status(409).json({ message: 'Email already exists' });
+        }
+
+        const body = req.body;
+        body.createdAt = new Date();
+
+        const result = await usersCollection.insertOne(body);
+        res.send(result);
+      } catch (error) {
+        console.error('Signup error:', error);
+        res.status(400).json({ message: 'Failed to create user!', error: error?.message });
+      }
+    });
 
     // API For Vehicles Collection
     // GET API
