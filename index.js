@@ -37,20 +37,55 @@ async function run() {
     // post api
     app.post('/signup', async (req, res) => {
       try {
-        const existing = await usersCollection.findOne({ email: req.body.email });
+        const { email } = req.body;
+
+        const existing = await usersCollection.findOne({ email });
 
         if (existing) {
-          return res.status(409).json({ message: 'Email already exists' });
+          return res.status(200).json({
+            message: 'User already exists',
+            user: existing,
+          });
         }
 
-        const body = req.body;
-        body.createdAt = new Date();
+        const body = {
+          ...req.body,
+          createdAt: new Date(),
+        };
 
         const result = await usersCollection.insertOne(body);
+
+        res.status(201).json({
+          message: 'User created',
+          result,
+        });
+      } catch (error) {
+        res.status(500).json({ message: 'Signup failed' });
+      }
+    });
+
+    // GET API
+    app.get('/users', async (req, res) => {
+      try {
+        const email = req.query.email;
+
+        if (!email) {
+          return res.status(400).json({ message: 'email query is required' });
+        }
+
+        const result = await usersCollection.findOne({ email });
+
+        if (!result) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+
         res.send(result);
       } catch (error) {
-        console.error('Signup error:', error);
-        res.status(400).json({ message: 'Failed to create user!', error: error?.message });
+        console.error('Get user error:', error);
+        res.status(500).json({
+          message: 'Failed to get user',
+          error: error.message,
+        });
       }
     });
 
